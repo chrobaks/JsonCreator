@@ -82,5 +82,26 @@ $view_data = $MyController->getView();
     </div>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    
+    
+    $(document).ready(function () {
+        
+        /*
+        
+        @ToDO implement request handling
+        
+        $('form').on('submit', function () {
+            switch(this.name){
+                case'newJsonForm':
+                    break;
+            }
+            return false;
+        })
+        
+        */
+        
+    });
+    </script>
 </body>
 </html>
