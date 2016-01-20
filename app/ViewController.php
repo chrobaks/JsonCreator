@@ -7,7 +7,6 @@ class ViewController {
     private $error;
     private $Messages;
     private $Model;
-    private $Db;
     
     public function __construct () {
         
