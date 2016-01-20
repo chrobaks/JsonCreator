@@ -27,16 +27,23 @@ class ViewModel {
         $this->jsonstorage = array();
     }
     
-	public static function get_instance($Messages){
-		if( ! isset(self::$instance)){self::$instance = new ViewModel($Messages);}
+	public static function get_instance($Messages = ''){
+	   
+		if( ! isset(self::$instance)){
+		  
+		  self::$instance = new ViewModel($Messages);
+          
+        }
+        
 		return self::$instance;
 	}
     
     private function putEncodeContents ($resource, $filename) {
         
-        $json = json_encode($resource);
+        $json = (is_array($resource)) ? json_encode($resource) : $resource;
         file_put_contents($filename, $json);
         
+        return file_exists($filename);
     }
     
     private function getDecodeContents ($filename) {
@@ -48,7 +55,7 @@ class ViewModel {
     
     private function setResourceIndexKey ($resourceconf) {
         
-        $this->resource_indexkey = (isset($resourceconf['indexkey'])) ? $resourceconf['indexkey']:'';
+        $this->resource_indexkey = (isset($resourceconf['indexkey'])) ? $resourceconf['indexkey'] : '';
         
     }
     private function setResourceKeys ($resourceconf) {
@@ -116,7 +123,6 @@ class ViewModel {
             }
         }
     }
-    
     private function filterJsonfileObject ($arr) {
         
         $res = true;
@@ -132,13 +138,13 @@ class ViewModel {
                     $this->jsonfile_object[$k] = $arr[$k];
                     
                 } else {
-                    $this->Messages->setError('Kein Eintrag in Feld : '.$k);
+                    $this->Messages->setError('field_empty', $k);
                     $res = false;
                     break;
                 }
                 
             }else {
-                $this->Messages->setError('Folgendes Feld nicht gefunden : '.$k);    
+                $this->Messages->setError('field_notfound', $k);    
                 $res = false;
                 break;
             }
@@ -175,13 +181,13 @@ class ViewModel {
                     $this->resource_object[$k] = $arr[$k];
                     
                 } else {
-                    $this->Messages->setError('Kein Eintrag in Feld : '.$k);
+                    $this->Messages->setError('field_empty', $k);
                     $res = false;
                     break;
                 }
                 
             }else {
-                $this->Messages->setError('Folgendes Feld nicht gefunden : '.$k);    
+                $this->Messages->setError('field_notfound', $k);    
                 $res = false;
                 break;
             }
@@ -205,21 +211,19 @@ class ViewModel {
             
             if ( ! unlink ($filename_jason)) {
                 
-                $this->Messages->setError('Kann Datei nicht löschen : '.$filename.'.json'); 
+                    $this->Messages->setError('file_delete_failed', $filename.'.json'); 
                 
             } else {
                 
                if ( ! unlink ($filename_conf)) {
                 
-                $this->Messages->setError('Kann Datei nicht löschen : '.$filename.'.conf.json'); 
+                    $this->Messages->setError('file_delete_failed', $filename.'.conf.json'); 
                 
                 }
             }
-            
-            
         } else {
             
-            $this->Messages->setError('Datei nicht gefunden : '.$filename.'.json'); 
+            $this->Messages->setError('file_notfound', $filename.'.json'); 
             
         }
     }
@@ -232,11 +236,15 @@ class ViewModel {
             
             unset($resource[$resourceid]);
             
-            $this->putEncodeContents($resource, JSONPATH.$activestorage);
+            if ( ! $this->putEncodeContents($resource, JSONPATH.$activestorage)) {
+                
+                $this->Messages->setError('resource_update_failed', $activestorage);
+                
+            }
             
         } else {
             
-            $this->Messages->setError('Resource nicht gefunden : '.$resourceid); 
+            $this->Messages->setError('resource_notfound', $resourceid); 
             
         }
     }
@@ -304,20 +312,15 @@ class ViewModel {
             $conffile = JSONPATH.$this->jsonfile_object['jsonfile'].'.conf.json';
             $jsonfile = JSONPATH.$this->jsonfile_object['jsonfile'].'.json';
             
-            $this->putEncodeContents($this->jsonfile_object, $conffile);
-            
-            if (file_exists($conffile)) {
+            if ($this->putEncodeContents($this->jsonfile_object, $conffile)) {
                 
-                file_put_contents($jsonfile, '{}');
-                
-                if ( ! file_exists($jsonfile)) {
+                if ( ! $this->putEncodeContents('{}', $jsonfile)) {
                     
-                    $this->Messages->setError('Die json datei konnte nicht gespeichert werden.');
+                    $this->Messages->setError('file_save_failed', $jsonfile);
                 }
-                
             } else {
                 
-                $this->Messages->setError('Die json.config datei konnte nicht gespeichert werden.');
+                $this->Messages->setError('file_save_failed', $conffile);
                 
             }
         }
@@ -330,8 +333,11 @@ class ViewModel {
             $resource = $this->getDecodeContents(JSONPATH.$data['activestorage']);
             $resource[$this->resource_object_id] = $this->resource_object;
             
-            $this->putEncodeContents($resource, JSONPATH.$data['activestorage']);
-            
+            if ( ! $this->putEncodeContents($resource, JSONPATH.$data['activestorage'])) {
+                
+                $this->Messages->setError('resource_save_failed', $this->resource_object_id);
+                
+            }
         }   
     }
 }

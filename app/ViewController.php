@@ -50,7 +50,7 @@ class ViewController {
         
         if ( ! $this->Messages->hasError()) {
             
-            $this->Messages->setInfo[] = 'Die Datei wurde gespeichert.';
+            $this->Messages->setInfo('file_saved');
         }
     }
     
@@ -60,10 +60,11 @@ class ViewController {
         
         if ( ! $this->Messages->hasError()) {
             
-            $this->Messages->setInfo[] = 'Die Datei wurde gelöscht.';
+            $this->Messages->setInfo('file_delete');
         }
         
     }
+    
     
     private function addResource () {
         
@@ -71,7 +72,7 @@ class ViewController {
         
         if ( ! $this->Messages->hasError()) {
             
-            $this->Messages->setInfo[] = 'Die Resource wurde gespeichert.';
+            $this->Messages->setInfo('resource_saved');
         }
         
     }
@@ -82,7 +83,7 @@ class ViewController {
         
         if ( ! $this->Messages->hasError()) {
             
-            $this->Messages->setInfo[] = 'Die Resource wurde gelöscht.';
+            $this->Messages->setInfo('resource_delete');
         }
             
     }

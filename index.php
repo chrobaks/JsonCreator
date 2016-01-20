@@ -1,6 +1,6 @@
 <?php
 /*
-* define path to json and app
+* define path to json and project dir 
 */
 define("JSONPATH", 'json'.DIRECTORY_SEPARATOR);
 define("DIR", __DIR__);
