@@ -27,6 +27,7 @@
                     <div class="col-md-1">&nbsp;</div>
                     <div class="col-md-10">
                         <input type="submit" value="speichern">
+                        <input type="hidden" name="act" value="newresource" >
                         <input type="hidden" name="resourceaction" value="new" >
                         <input type="hidden" name="activestorage" value="<?php echo $view_data['resourcestorage']['jsonfile']; ?>" >
                     </div>

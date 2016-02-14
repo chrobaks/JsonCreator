@@ -33,7 +33,8 @@
                         <div class="col-md-1">&nbsp;</div>
                         <div class="col-md-10">
                             <input type="submit" value="speichern" >&nbsp;&nbsp;|&nbsp;&nbsp;
-                            <a href="index.php?delete=<?php echo $rowkey; ?>&activestorage=<?php echo $view_data['resourcestorage']['jsonfile']; ?>" target="_self" title="Resource löschen" >Resource löschen</a>
+                            <a href="index.php?act=deleteresource&delete=<?php echo $rowkey; ?>&activestorage=<?php echo $view_data['resourcestorage']['jsonfile']; ?>" target="_self" title="Resource löschen" >Resource löschen</a>
+                            <input type="hidden" name="act" value="addresource" >
                             <input type="hidden" name="<?php echo $view_data['resourcestorage']['resourceindexkey']; ?>" value="<?php echo $rowkey; ?>" >
                             <input type="hidden" name="resourceaction" value="edit" >
                             <input type="hidden" name="activestorage" value="<?php echo $view_data['resourcestorage']['jsonfile']; ?>" >

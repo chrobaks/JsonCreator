@@ -2,11 +2,11 @@
 
 class ViewController {
     
+    private $Messages;
+    private $Model;
     private $view;
     private $info;
     private $error;
-    private $Messages;
-    private $Model;
     
     public function __construct () {
         
@@ -20,76 +20,55 @@ class ViewController {
     
     private function setHttpListener () {
         
-        if ( isset($_POST['jsonfile']) && ! empty($_POST['jsonfile'])) {
-            
-            $this->addJsonfile();
-            
-        } else if ( isset($_POST['resourceaction']) && ! empty($_POST['activestorage'])) {
-            
-            $this->addResource();
-            
-        } else if ( isset($_GET['delete'], $_GET['activestorage']) && ! empty($_GET['delete']) && ! empty($_GET['activestorage'])) {
-            
-            $this->deleteResource();
-            
-            $_POST['activestorage'] = $_GET['activestorage'];
-            
-        } else if ( isset($_GET['deletefile'])) {
-            
-            $this->deleteJson();
-            
-            $this->view['activelayer'] = 'all';
-            
-        }
-    }
-    
-    private function addJsonfile () {
+        $act = ( isset($_POST['act']) && ! empty($_POST['act'])) 
+            ? $_POST['act'] 
+            : ((isset($_GET['act']) && ! empty($_GET['act'])) 
+                ? $_GET['act'] 
+                : '' );
+                
+        $infokey = '';
         
-        $this->Model->setJsonfile($_POST);
+        $this->Model->setJsonStorageActiv();
         
-        if ( ! $this->Messages->hasError()) {
+        switch ($act) {
+            case('newjson'):
             
-            $this->Messages->setInfo('file_saved');
-        }
-    }
-    
-    private function deleteJson () {
-        
-        $this->Model->deleteJson($_GET['deletefile']);
-        
-        if ( ! $this->Messages->hasError()) {
+                $this->Model->addJsonfile();
+                $infokey = 'file_saved';
+                
+                break;
+            case('newresource'):
+            case('addresource'):
             
-            $this->Messages->setInfo('file_delete');
+                $this->Model->addResource();
+                $infokey = 'resource_saved';
+                
+                break;
+            case('deletejson'):
+            
+                $this->Model->deleteJson();
+                $this->view['activelayer'] = 'all';
+                $infokey = 'file_delete';
+                
+                break;
+            case('deleteresource'):
+            
+                $this->Model->deleteResource();
+                $infokey = 'resource_delete';
+                
+                break;
         }
         
-    }
-    
-    
-    private function addResource () {
-        
-        $this->Model->setResource($_POST);
-        
-        if ( ! $this->Messages->hasError()) {
+        if ( ! $this->Messages->hasError() && $infokey !== '') {
             
-            $this->Messages->setInfo('resource_saved');
+            $this->Messages->setInfo($infokey);
+            
         }
-        
-    }
-    
-    private function deleteResource () {
-        
-        $this->Model->deleteResource($_GET['delete'], $_GET['activestorage']);
-        
-        if ( ! $this->Messages->hasError()) {
-            
-            $this->Messages->setInfo('resource_delete');
-        }
-            
     }
     
     public function getView () {
         
-        $activestorage = (isset($_POST['activestorage'])) ? $_POST['activestorage'] : '' ;
+        $activestorage = $this->Model->getJsonStorageActiv();
         
         if ($activestorage !== '') {
             $this->view['activelayer'] = 'all';

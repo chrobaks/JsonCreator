@@ -30,7 +30,8 @@
                     <div class="col-md-1">&nbsp;</div>
                     <div class="col-md-10">
                         <input type="submit" value="Datei zeigen">&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="#" onclick="document.location.href = 'index.php?deletefile=' + document.jsonstorageForm.activestorage.value.replace(/\.json$/,'')" title="Resource löschen" >Datei löschen</a>
+                        <input type="hidden" name="act" value="selectjson">
+                        <a href="#" onclick="document.location.href = 'index.php?act=deletejson&deletefile=' + document.jsonstorageForm.activestorage.value.replace(/\.json$/,'')" title="Resource löschen" >Datei löschen</a>
                     </div>
                     <div class="col-md-1">&nbsp;</div>
                 </div>

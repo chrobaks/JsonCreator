@@ -46,6 +46,7 @@
                     <div class="col-md-1">&nbsp;</div>
                     <div class="col-md-10">
                         <input type="submit" value="speichern">
+                        <input type="hidden" name="act" value="newjson">
                     </div>
                     <div class="col-md-1">&nbsp;</div>
                 </div>

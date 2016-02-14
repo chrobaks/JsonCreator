@@ -11,6 +11,8 @@ class ViewModel {
     private $resource_object_id;
     private $jsonfile_object;
     private $jsonstorage;
+    private $jsonstorage_activ;
+    private $filter;
     
     public function __construct ($Messages) {
         
@@ -25,6 +27,12 @@ class ViewModel {
             "indexkey" => ""
         );
         $this->jsonstorage = array();
+        $this->jsonstorage_activ = '';
+        
+        $this->filter = array(
+            'deletejson' => array('deletefile'),
+            'deleteresource' => array('delete','activestorage')
+        );
     }
     
 	public static function get_instance($Messages = ''){
@@ -123,6 +131,33 @@ class ViewModel {
             }
         }
     }
+    
+    private function filterHttp ($filter,$type='post') {
+        
+        $http = ($type==='post') ? $_POST : $_GET;
+        $res = array();
+        
+        if (isset($this->filter[$filter])) {
+            
+            foreach ($this->filter[$filter] as $key) {
+                
+                if (isset($http[$key])) {
+                    
+                    $val = trim($http[$key]);
+                    
+                    if ( ! empty($val)) {
+                        $res[$key] = $val;
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        return $res;
+        
+    }
+    
     private function filterJsonfileObject ($arr) {
         
         $res = true;
@@ -202,7 +237,32 @@ class ViewModel {
         return $res;
     }
     
-    public function deleteJson ($filename) {
+    public function setJsonStorageActiv () {
+        
+        $this->jsonstorage_activ = '';
+        
+        if (isset($_POST['activestorage']) && ! empty($_POST['activestorage'])) {
+            
+            $this->jsonstorage_activ = $_POST['activestorage'];
+            
+        } else if (isset($_GET['activestorage']) && ! empty($_GET['activestorage'])) {
+            
+            $this->jsonstorage_activ = $_GET['activestorage'];
+        }
+        
+    }
+    
+    public function getJsonStorageActiv () {
+        
+        return $this->jsonstorage_activ;
+        
+    }
+    
+    public function deleteJson () {
+        
+        $data = $this->filterHttp('deletejson','get');
+        
+        $filename = $data['deletefile'];
         
         $filename_jason = DIR.DIRECTORY_SEPARATOR.JSONPATH.$filename.'.json';
         $filename_conf = DIR.DIRECTORY_SEPARATOR.JSONPATH.$filename.'.conf.json';
@@ -228,17 +288,21 @@ class ViewModel {
         }
     }
     
-    public function deleteResource ($resourceid, $activestorage) {
+    public function deleteResource () {
         
-        $resource = $this->getDecodeContents(JSONPATH.$activestorage);
+        $data = $this->filterHttp('deleteresource','get');
+        
+        $resourceid = $data['delete'];
+        
+        $resource = $this->getDecodeContents(JSONPATH.$this->jsonstorage_activ);
         
         if (isset($resource[$resourceid])) {
             
             unset($resource[$resourceid]);
             
-            if ( ! $this->putEncodeContents($resource, JSONPATH.$activestorage)) {
+            if ( ! $this->putEncodeContents($resource, JSONPATH.$this->jsonstorage_activ)) {
                 
-                $this->Messages->setError('resource_update_failed', $activestorage);
+                $this->Messages->setError('resource_update_failed', $this->jsonstorage_activ);
                 
             }
             
@@ -305,9 +369,9 @@ class ViewModel {
         
     }
     
-    public function setJsonfile ($data) {
+    public function addJsonfile () {
         
-        if ($this->filterJsonfileObject ($data)) {
+        if ($this->filterJsonfileObject ($_POST)) {
             
             $conffile = JSONPATH.$this->jsonfile_object['jsonfile'].'.conf.json';
             $jsonfile = JSONPATH.$this->jsonfile_object['jsonfile'].'.json';
@@ -326,9 +390,9 @@ class ViewModel {
         }
     }
     
-    public function setResource ($data) {
+    public function addResource () {
         
-        if ($this->filterResourceObject ($data)) {
+        if ($this->filterResourceObject ($_POST)) {
             
             $resource = $this->getDecodeContents(JSONPATH.$data['activestorage']);
             $resource[$this->resource_object_id] = $this->resource_object;
